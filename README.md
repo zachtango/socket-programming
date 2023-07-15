@@ -10,7 +10,7 @@ I am deeply curious about socket programming and its role in building networked 
 
 The repository includes the following projects:
 
-1. Echo Server: An echo server that echoes back messages received from clients.
+1. [Echo Server](https://github.com/zachtango/socket-programming/tree/main/echoServer): An echo server that echoes back messages received from clients.
 
 Each project is organized in its own directory and contains a GIF demo showcasing how it works.
 
