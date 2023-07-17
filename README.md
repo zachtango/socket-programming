@@ -12,6 +12,7 @@ The repository includes the following projects:
 
 1. [Echo Server](https://github.com/zachtango/socket-programming/tree/main/echoServer): An echo server that echoes back messages received from clients.
 2. [Chat Application](https://github.com/zachtango/socket-programming/tree/main/chatRoom): A simple chat application allowing multiple clients to exchange messages.
+3. [HTTP Server](https://github.com/zachtango/socket-programming/tree/main/httpServer): A simple HTTP server allowing programmer to handle different endpoints.
 
 Each project is organized in its own directory and contains a GIF demo showcasing how it works.
 
