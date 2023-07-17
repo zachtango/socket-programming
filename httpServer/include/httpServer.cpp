@@ -17,6 +17,8 @@ using std::cout;
 using namespace http;
 
 // Util
+// Function to split a string into tokens based on a delimiter.
+// Returns a vector of tokens.
 vector<string> splitString(const string& input, char delimiter) {
     vector<string> tokens;
     string token;
@@ -34,19 +36,26 @@ struct ThreadArgs {
     void (http::Server::*handleClient)(int);
     Server *server;
 
+    // Struct constructor
     ThreadArgs(int clntSock, void (http::Server::*handleClient)(int), Server *server) :
         clntSock(clntSock), handleClient(handleClient), server(server) {}
 };
 
 void Server::endpoint(string &e, function<struct Response(struct Request &)> f) {
+    // Function to register an endpoint with a corresponding handler function.
+    // Takes a string representing the endpoint and a function pointer to the handler function.
     endpoints[e] = f;
 }
 
 void Server::endpoint(const char *e, function<struct Response(struct Request &)> f) {
+    // Function to register an endpoint with a corresponding handler function.
+    // Takes a character array representing the endpoint and a function pointer to the handler function.
     endpoints[string(e)] = f;
 }
 
 struct Request Server::parseRequest(string request) {
+    // Function to parse an HTTP request and extract the method, path, and version.
+    // Returns a struct containing the parsed request.
     struct Request Request;
 
     vector<string> tokens = splitString(request, ' ');
@@ -64,7 +73,8 @@ struct Request Server::parseRequest(string request) {
 }
 
 void Server::handleClient(int clntSock) {
-    // Assuming we are getting HTTP requests from clntSock
+    // Function to handle an incoming client connection.
+    // Assumes that the client is sending HTTP requests.
 
     char buffer[BUFFERSIZE];
 
@@ -103,6 +113,9 @@ void Server::handleClient(int clntSock) {
 }
 
 void *handleThread(void *arg) {
+    // Function to handle a client connection in a separate thread.
+    // Takes a pointer to a ThreadArgs struct as an argument.
+
     struct ThreadArgs *args = (struct ThreadArgs *) arg;
 
     int clntSock = args->clntSock;
@@ -115,6 +128,8 @@ void *handleThread(void *arg) {
 }
 
 void Server::run(int servPort) {
+    // Function to start the server and listen for incoming client connections.
+
     // Create socket
     servSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if ( servSock < 0 ) {
