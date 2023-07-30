@@ -8,16 +8,17 @@ using std::string;
 using std::unordered_map;
 #include <iostream>
 using std::cout;
+using std::cerr;
 #include <algorithm>
 using std::swap;
 #include <exception>
 using std::exception;
+#include <vector>
+using std::vector;
+#include <typeinfo>
 
 #include "Game.h"
-
-int nextPlayerId = 1;
-
-uWS::SSLApp *globalApp;
+#include "GameTicTacToe.h"
 
 /* ws->getUserData returns this */
 struct PerSocketData {
@@ -26,26 +27,33 @@ struct PerSocketData {
     int playerId;
 };
 
+int nextPlayerId = 1;
+
+uWS::SSLApp *globalApp;
+
+unordered_map<string, Game*> games;
+unordered_map<string, vector<uWS::WebSocket<true, true, PerSocketData> *> > channels;
+
 bool gameIdValid(string gameId) {
     return gameId.size() > 0;
 }
 
 void SendUpdateBoard(PerSocketData *socketData, Game *game) {
+    json response;
     response["type"] = "UpdateBoard";
-    response["payload"] = game.Json();
+    response["payload"] = game->Json();
     globalApp->publish(socketData->gameId, response.dump(), uWS::OpCode::TEXT);
 }
 
-void SendWinner(Player winner) {
+void SendWinner(PerSocketData *socketData, Game *game, Player winner) {
+    json response;
     response["type"] = "Winner";
-    response["payload"] = game.Json();
+    response["payload"] = game->Json();
     response["payload"]["winner"] = winner;
     globalApp->publish(socketData->gameId, response.dump(), uWS::OpCode::TEXT);
 }
 
 int main() {
-
-    unordered_map<string, Game*> games;
 
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
      * You may swap to using uWS:App() if you don't need SSL */
@@ -66,7 +74,7 @@ int main() {
         /* Handlers */
 
         /* Client Initiating Socket Connection */
-        .upgrade = [&games](auto *res, auto *req, auto *context) {
+        .upgrade = [](auto *res, auto *req, auto *context) {
 
             /* You may read from req only here, and COPY whatever you need into your PerSocketData.
              * PerSocketData is valid from .open to .close event, accessed with ws->getUserData().
@@ -84,7 +92,7 @@ int main() {
             if (games.count(gameId) == 0) {
                 cout << "Game created: " << gameId << '\n';
                 // FIXME create game
-                // games[gameId] = Game();
+                games[gameId] = new GameTicTacToe();
             }
             Game *game = games[gameId];
 
@@ -118,6 +126,9 @@ int main() {
 
             // Subscribe to game channel so both players get updates
             ws->subscribe(socketData->gameId);
+            cout << "socket opened\n";
+            // Keep track of channels to unsub the sockets
+            channels[socketData->gameId].push_back(ws);
 
             Game *game = games[socketData->gameId];
 
@@ -128,7 +139,7 @@ int main() {
         },
 
         /* Client communicating a message to server */
-        .message = [&games](auto *ws, std::string_view message, uWS::OpCode opCode) {
+        .message = [](auto *ws, std::string_view message, uWS::OpCode opCode) {
             PerSocketData *socketData = ws->getUserData();
 
             // Game doesn't exist
@@ -149,7 +160,7 @@ int main() {
                 SendUpdateBoard(socketData, game);
             } else if (data["type"] == ClientMessageType::Move){
                 try {
-                    if (game.playerTurn != game.GetPlayer(socketData->playerId)) {
+                    if (game->IsPlayerTurn(socketData->playerId)) {
                         return;
                     }
 
@@ -164,7 +175,7 @@ int main() {
                     // Check if someone has won            
                     Player winner = game->Winner();
                     if (winner != Player::Spectator) {
-                        SendWinner(winner);
+                        SendWinner(socketData, game, winner);
                     } else {
                         SendUpdateBoard(socketData, game);
                     }
@@ -181,9 +192,20 @@ int main() {
             /* You may access ws->getUserData() here, but sending or
              * doing any kind of I/O with the socket is not valid. */
             PerSocketData *socketData = ws->getUserData();
-            ws->unsubscribe(socketData->gameId);
-            std::cout << "socket closed\n";
 
+            /* This will fire the other sockets' close event, but calling unsubscribe and end
+             * on web sockets that are already closed will not have any adverse effects */
+            for (auto &ws : channels[socketData->gameId]) {
+                ws->unsubscribe(socketData->gameId);
+                ws->end();
+                std::cout << "socket closed\n";
+            }
+
+            if (games.count(socketData->gameId)) {
+                // Clean up game
+                delete games[socketData->gameId];
+                games.erase(socketData->gameId);
+            }
         }
 
     })
