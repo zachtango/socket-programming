@@ -104,8 +104,6 @@ int main() {
             if (player == Player::Spectator) {
                 res->end();
                 cout << "No spectators\n";
-                // FIXME remove later and handle deleting games properly
-                games.erase(gameId);
                 return;
             }
 
@@ -192,19 +190,27 @@ int main() {
             /* You may access ws->getUserData() here, but sending or
              * doing any kind of I/O with the socket is not valid. */
             PerSocketData *socketData = ws->getUserData();
+            string gameId = socketData->gameId;
 
             /* This will fire the other sockets' close event, but calling unsubscribe and end
              * on web sockets that are already closed will not have any adverse effects */
-            for (auto &ws : channels[socketData->gameId]) {
-                ws->unsubscribe(socketData->gameId);
-                ws->end();
-                std::cout << "socket closed\n";
-            }
+            if (channels.count(gameId)) {
+                vector<uWS::WebSocket<true, true, PerSocketData> *> wss (channels[gameId]);
+                
+                cout << "Clean up channel: " << gameId << '\n';
+                // Clean up channel
+                channels.erase(gameId);
 
-            if (games.count(socketData->gameId)) {
+                cout << "Clean up game: " << gameId << '\n';
                 // Clean up game
-                delete games[socketData->gameId];
-                games.erase(socketData->gameId);
+                delete games[gameId];
+                games.erase(gameId);
+
+                // Close all web scokets on channel
+                for (auto &ws : wss) {
+                    ws->end();
+                    cout << "Web socket closed\n";
+                }
             }
         }
 
