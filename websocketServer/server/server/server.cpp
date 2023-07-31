@@ -145,9 +145,12 @@ int main() {
             Game *game = games[socketData->gameId];
 
             SendInitializeGame(ws, socketData, game, socketData->playerId);
+            
+
 
             // Start game if 2 players
             if (game->StartGame()) {
+                cout << "Start Game\n";
                 SendUpdateBoard(socketData, game);
             }            
         },

@@ -74,6 +74,9 @@ public:
     }
 
     bool StartGame() override {
+        std::cout << "Try to start game\n";
+        std::cout << "Players: " << players[0] << ' ' << players[1] << '\n';
+        std::cout << "Game State: " << (int) state << '\n';
         if (state == GameState::Idle &&
             players[0] != 0 &&
             players[1] != 0) {
