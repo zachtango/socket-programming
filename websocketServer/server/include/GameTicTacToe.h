@@ -37,6 +37,7 @@ public:
         players[1] = 0;
 
         playerTurn = Player::Two;
+        state = GameState::Idle;
     }
 
     void AddPlayer(int playerId) override {
