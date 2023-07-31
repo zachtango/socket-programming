@@ -49,9 +49,9 @@ public:
 
     Player GetPlayer(int playerId) override {
         if (players[0] == playerId) {
-            return Player::Two;
-        } else if (players[1] == playerId) {
             return Player::One;
+        } else if (players[1] == playerId) {
+            return Player::Two;
         }
 
         return Player::Spectator;
@@ -160,6 +160,11 @@ public:
             {board[1][0], board[1][1], board[1][2]},
             {board[2][0], board[2][1], board[2][2]}
         });
+        data["playerIdToPlayer"] = {
+            {players[0], Player::One},
+            {players[1], Player::Two}
+        };
+        data["gameState"] = state;
 
         return data;
     }

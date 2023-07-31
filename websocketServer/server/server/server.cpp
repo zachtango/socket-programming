@@ -38,6 +38,21 @@ bool gameIdValid(string gameId) {
     return gameId.size() > 0;
 }
 
+void SendInitializeGame(uWS::WebSocket<true, true, PerSocketData> *ws, PerSocketData *socketData, Game *game, int playerId) {
+    json response;
+    response["type"] = "InitializeGame";
+    response["payload"] = game->Json();
+    response["payload"]["playerId"] = playerId;
+    ws->send(response.dump(), uWS::OpCode::TEXT);
+}
+
+void SendRestartGame(PerSocketData *socketData, Game *game) {
+    json response;
+    response["type"] = "RestartGame";
+    response["payload"] = game->Json();
+    globalApp->publish(socketData->gameId, response.dump(), uWS::OpCode::TEXT);
+}
+
 void SendUpdateBoard(PerSocketData *socketData, Game *game) {
     json response;
     response["type"] = "UpdateBoard";
@@ -91,7 +106,6 @@ int main() {
             // Create game
             if (games.count(gameId) == 0) {
                 cout << "Game created: " << gameId << '\n';
-                // FIXME create game
                 games[gameId] = new GameTicTacToe();
             }
             Game *game = games[gameId];
@@ -130,14 +144,17 @@ int main() {
 
             Game *game = games[socketData->gameId];
 
+            SendInitializeGame(ws, socketData, game, socketData->playerId);
+
             // Start game if 2 players
             if (game->StartGame()) {
                 SendUpdateBoard(socketData, game);
-            }
+            }            
         },
 
         /* Client communicating a message to server */
         .message = [](auto *ws, std::string_view message, uWS::OpCode opCode) {
+            cout << "message received " << message << '\n';
             PerSocketData *socketData = ws->getUserData();
 
             // Game doesn't exist
@@ -149,19 +166,20 @@ int main() {
 
             json data = json::parse(message);
             json response;
-
+            cout << "Game exists\n";
             if (data["type"] == ClientMessageType::PlayAgain) {
                 if (!game->Reset()) {
                     return;
                 }
 
-                SendUpdateBoard(socketData, game);
+                SendRestartGame(socketData, game);
             } else if (data["type"] == ClientMessageType::Move){
                 try {
-                    if (game->IsPlayerTurn(socketData->playerId)) {
+                    cout << "Message is move\n";
+                    if (!game->IsPlayerTurn(socketData->playerId)) {
                         return;
                     }
-
+                    cout << "Is player turn\n";
                     int x = data["move"][0],
                         y = data["move"][1];
                     
