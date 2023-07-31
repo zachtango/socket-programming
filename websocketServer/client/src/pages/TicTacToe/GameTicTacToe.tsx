@@ -71,7 +71,8 @@ function GameTicTacToe({
 
         console.log(player, winner)
         handleWinner(
-          winner === player ? 'You Won' : 'You Lost'
+          winner === player ? 'You Won' : 
+          winner === Player.Spectator ? 'It\'s a Tie' : 'You Lost'
         )
       }
     }

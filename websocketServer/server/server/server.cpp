@@ -145,8 +145,6 @@ int main() {
             Game *game = games[socketData->gameId];
 
             SendInitializeGame(ws, socketData, game, socketData->playerId);
-            
-
 
             // Start game if 2 players
             if (game->StartGame()) {
@@ -193,7 +191,7 @@ int main() {
 
                     // Check if someone has won            
                     Player winner = game->Winner();
-                    if (winner != Player::Spectator) {
+                    if (winner != Player::Spectator || game->GameEnd()) {
                         SendWinner(socketData, game, winner);
                     } else {
                         SendUpdateBoard(socketData, game);

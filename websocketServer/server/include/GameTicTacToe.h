@@ -140,6 +140,23 @@ public:
         return Player::Spectator;
     }
 
+    bool GameEnd() override {
+        bool tie = true;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == Square::Empty) {
+                    tie = false;
+                }
+            }
+        }
+
+        if (tie) {
+            state = GameState::Finished;
+        }
+
+        return state == GameState::Finished;
+    }
+
     bool Reset() override {
         if (state != GameState::Finished) {
             return false;
