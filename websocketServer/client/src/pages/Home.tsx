@@ -1,7 +1,7 @@
 import React from 'react';
 import CardContainer from '../components/CardContainer';
 
-function Home() {
+function Home({handleClickCard} : {handleClickCard: () => void}) {
   return (
     <div className='Home w-full h-full p-12'>
       <div className='h-[10%]'>
@@ -12,7 +12,9 @@ function Home() {
           play with friends!
         </p>
       </div>
-      <CardContainer />
+      <CardContainer
+        handleClickCard={handleClickCard}
+      />
     </div>
   );
 }
