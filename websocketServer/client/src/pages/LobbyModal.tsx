@@ -14,7 +14,7 @@ function LobbyModal({
 }) {
   return (
     <div className='LobbyModal bg-white absolute p-8 m-auto top-0 bottom-0 left-0 right-0 max-w-[300px] min-w-[150px] w-[70%] aspect-square border-2 flex flex-col justify-evenly items-center'>
-      <h1 className="text-2xl font-bold mb-4">Tic Tac Toe</h1>
+      <h1 className="text-2xl font-bold mb-4">{gameName}</h1>
       
       <div
         className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-secondary motion-reduce:animate-[spin_1.5s_linear_infinite]"
