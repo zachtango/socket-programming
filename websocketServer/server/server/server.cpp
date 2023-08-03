@@ -15,10 +15,13 @@ using std::swap;
 using std::exception;
 #include <vector>
 using std::vector;
-#include <typeinfo>
+#include <unordered_set>
+using std::unordered_set;
+
 
 #include "Game.h"
 #include "GameTicTacToe.h"
+#include "GameConnectFour.h"
 
 /* ws->getUserData returns this */
 struct PerSocketData {
@@ -36,6 +39,11 @@ unordered_map<string, vector<uWS::WebSocket<true, true, PerSocketData> *> > chan
 
 bool gameIdValid(string gameId) {
     return gameId.size() > 0;
+}
+
+bool gameNameValid(string gameName) {
+    unordered_set<string> games {"Tic Tac Toe", "Connect Four"};
+    return games.count(gameName);
 }
 
 void SendInitializeGame(uWS::WebSocket<true, true, PerSocketData> *ws, PerSocketData *socketData, Game *game, int playerId) {
@@ -90,23 +98,28 @@ int main() {
 
         /* Client Initiating Socket Connection */
         .upgrade = [](auto *res, auto *req, auto *context) {
-
+            
             /* You may read from req only here, and COPY whatever you need into your PerSocketData.
              * PerSocketData is valid from .open to .close event, accessed with ws->getUserData().
              * HttpRequest (req) is ONLY valid in this very callback, so any data you will need later
              * has to be COPIED into PerSocketData here. */
 
             string gameId(req->getParameter(0));
+            string gameName(req->getQuery("game"));
 
             // Validate request
-            if (!gameIdValid(gameId)) {
+            if (!gameIdValid(gameId) || !gameNameValid(gameName)) {
                 res->end();
             }
 
             // Create game
             if (games.count(gameId) == 0) {
-                cout << "Game created: " << gameId << '\n';
-                games[gameId] = new GameTicTacToe();
+                cout << gameName << " created: " << gameId << '\n';
+                if (gameName == "Tic Tac Toe") {
+                    games[gameId] = new GameTicTacToe();
+                } else if (gameName == "Connect Four") {
+                    games[gameId] = new GameConnectFour();
+                }
             }
             Game *game = games[gameId];
 

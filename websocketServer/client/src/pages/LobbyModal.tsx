@@ -1,12 +1,15 @@
 import React from 'react';
 import CardContainer from '../components/CardContainer';
 import {MdOutlineContentCopy} from 'react-icons/md';
+import { GameName } from '../utils/enums';
 
-const URL = 'http://localhost:3000'
+const URL = window.location.protocol + '//' + window.location.host;
 
 function LobbyModal({
+  gameName,
   gameId
 } : {
+  gameName: GameName,
   gameId: string
 }) {
   return (
@@ -24,7 +27,8 @@ function LobbyModal({
 
       <p>Waiting for a friend...</p>
       <div className='w-fit flex items-center justify-between border-2 px-2 py-1'>
-        <span className='mr-2'>{URL}/{gameId}</span>
+        <span className='mr-2'>{URL}/{gameId}?game={encodeURIComponent(gameName
+          )}</span>
         <MdOutlineContentCopy />
       </div>
     </div>

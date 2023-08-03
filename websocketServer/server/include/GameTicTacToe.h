@@ -7,29 +7,9 @@
 #include <iostream>
 
 class GameTicTacToe : public Game {
-private:
-    int players[2];
-    Player playerTurn;
-    Square board[3][3];
-    GameState state;
-
-    void _ResetBoard() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                board[i][j] = Square::Empty;
-            }
-        }
-    }
-
-    void NextTurn() {
-        if (playerTurn == Player::One) {
-            playerTurn = Player::Two;
-        } else {
-            playerTurn = Player::One;
-        }
-    }
-    
 public:
+    enum class Square {O, X, Empty};
+
     GameTicTacToe() {
         _ResetBoard();
 
@@ -142,8 +122,8 @@ public:
 
     bool GameEnd() override {
         bool tie = true;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
                 if (board[i][j] == Square::Empty) {
                     tie = false;
                 }
@@ -193,8 +173,8 @@ public:
     void Print() override {
         std::cout << "Player turn " << (playerTurn == Player::Two ? 'x' : 'o') << '\n';
         std::cout << "--------------\n";
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
                 std::cout << (board[i][j] == Square::X ? "X " :
                          board[i][j] == Square::O ? "O " :
                          "0 ");
@@ -203,6 +183,31 @@ public:
         }
         std::cout << '\n';
     }
+private:
+    static const int BOARD_WIDTH = 3,
+                     BOARD_HEIGHT = 3;
+
+    int players[2];
+    Player playerTurn;
+    Square board[BOARD_HEIGHT][BOARD_WIDTH];
+    GameState state;
+
+    void _ResetBoard() {
+        for (int i = 0; i < BOARD_HEIGHT; i++) {
+            for (int j = 0; j < BOARD_WIDTH; j++) {
+                board[i][j] = Square::Empty;
+            }
+        }
+    }
+
+    void NextTurn() {
+        if (playerTurn == Player::One) {
+            playerTurn = Player::Two;
+        } else {
+            playerTurn = Player::One;
+        }
+    }
+    
 };
 
 

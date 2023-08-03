@@ -26,7 +26,12 @@ export enum MessageType {
     Winner = 'Winner',
     RestartGame = 'RestartGame'
 }
-  
+
+/* Games */
+export enum GameName {
+    TicTacToe = 'Tic Tac Toe',
+    ConnectFour = 'Connect Four'
+}
 
 /* Tic Tac Toe */
 export namespace TicTacToe {
@@ -37,3 +42,11 @@ export namespace TicTacToe {
     }
 }
 
+/* Connect Four */
+export namespace ConnectFour {
+    export enum Square {
+        Red = 0,
+        Blue = 1,
+        Empty = 2
+    }
+}

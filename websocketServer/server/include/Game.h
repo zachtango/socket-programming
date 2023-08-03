@@ -9,7 +9,6 @@ namespace ClientMessageType {
 };
 
 enum class Player {One, Two, Spectator};
-enum class Square {O, X, Empty};
 enum class GameState {Idle, Active, Finished};
 
 class Game {

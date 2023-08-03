@@ -4,7 +4,7 @@ import './App.css';
 import CardContainer from './components/CardContainer';
 import Home from './pages/Home'
 import TicTacToe from './pages/TicTacToe/GameTicTacToe';
-import { PageState } from './utils/enums';
+import { GameName, PageState } from './utils/enums';
 import LobbyModal from './pages/LobbyModal';
 import EndGameModal from './pages/EndGameModal';
 import Game from './pages/Game';
@@ -27,14 +27,31 @@ function App() {
     }
   }
 
+  const params = new URLSearchParams(window.location.search)
+  let startingGame = params.get('game')
+  if (!Object.values(GameName).includes(startingGame as GameName)) {
+    startingGame = null
+  }
+  
   const [pageState, setPageState] = useState<PageState>(startingPageState)
+  const [game, setGame] = useState<GameName | null>(startingGame as GameName)
 
   let page;
 
-  if (pageState === PageState.Home) {
-    page = <Home handleClickCard={() => setPageState(PageState.Idle)}/>
-  } else if (pageState === PageState.Idle || pageState === PageState.Active || pageState === PageState.Finished) {
-    page = <Game gameId={gameId} pageState={pageState} handleGameStateChange={(gameState) => setPageState(gameState)} />
+  if (pageState === PageState.Home && !game) {
+    page = <Home handleClickCard={(game: GameName) => {
+      setGame(game)
+      setPageState(PageState.Idle)
+    }}/>
+  } else if (game && (pageState === PageState.Idle ||
+              pageState === PageState.Active ||
+              pageState === PageState.Finished)) {
+    page = <Game
+              gameName={game}
+              gameId={gameId}
+              pageState={pageState}
+              handleGameStateChange={(gameState) => setPageState(gameState)}
+            />
   }
 
   return (
