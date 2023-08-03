@@ -24,5 +24,7 @@ public:
     virtual bool Reset() = 0;
     virtual nlohmann::json Json() = 0;
     virtual void Print() = 0;
+
+    virtual ~Game() {}
 };
 
