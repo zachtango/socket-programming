@@ -24,7 +24,7 @@ function Game({
     const [winnerStatus, setWinnerStatus] = useState<string>('')
 
     useEffect(() => {
-        const socket = new WebSocket(`ws://localhost:9001/game/${gameId}?game=${gameName}`)
+        const socket = new WebSocket(`ws://${window.location.hostname}:9001/game/${gameId}?game=${gameName}`)
         
         setSocket(socket)
 
