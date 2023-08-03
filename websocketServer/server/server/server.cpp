@@ -42,7 +42,7 @@ bool gameIdValid(string gameId) {
 }
 
 bool gameNameValid(string gameName) {
-    unordered_set<string> games {"Tic Tac Toe", "Connect Four"};
+    static const unordered_set<string> games {"Tic Tac Toe", "Connect Four"};
     return games.count(gameName);
 }
 
@@ -106,9 +106,10 @@ int main() {
 
             string gameId(req->getParameter(0));
             string gameName(req->getQuery("game"));
-
+            cout << gameId << ' ' << gameName << '\n';
             // Validate request
             if (!gameIdValid(gameId) || !gameNameValid(gameName)) {
+                cout << gameId << " or " << gameName << " invalid\n";
                 res->end();
             }
 
