@@ -76,6 +76,12 @@ void SendWinner(PerSocketData *socketData, Game *game, Player winner) {
     globalApp->publish(socketData->gameId, response.dump(), uWS::OpCode::TEXT);
 }
 
+void SendPlayerLeft(uWS::WebSocket<true, true, PerSocketData> *ws) {
+    json response;
+    response["type"] = "PlayerLeft";
+    ws->send(response.dump(), uWS::OpCode::TEXT);
+}
+
 int main() {
 
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
@@ -240,11 +246,17 @@ int main() {
                 games.erase(gameId);
 
                 // Close all web scokets on channel
-                for (auto &ws : wss) {
-                    ws->end();
-                    cout << "Web socket closed\n";
+                for (auto &otherWs : wss) {
+                    if (ws == otherWs) {
+                        continue;
+                    }
+                    cout << "Player left\n";
+                    SendPlayerLeft(otherWs);
+                    otherWs->end();
                 }
             }
+            
+            cout << "Web socket closed\n";
         }
 
     })
