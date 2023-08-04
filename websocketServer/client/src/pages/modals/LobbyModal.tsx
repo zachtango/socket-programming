@@ -1,7 +1,7 @@
 import React from 'react';
-import CardContainer from '../components/CardContainer';
+import CardContainer from '../../components/CardContainer';
 import {MdOutlineContentCopy} from 'react-icons/md';
-import { GameName } from '../utils/enums';
+import { GameName } from '../../utils/enums';
 
 const URL = window.location.protocol + '//' + window.location.host;
 

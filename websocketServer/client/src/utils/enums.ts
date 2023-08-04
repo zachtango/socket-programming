@@ -17,7 +17,8 @@ export enum MessageType {
     InitializeGame = 'InitializeGame',
     UpdateBoard = 'UpdateBoard',
     Winner = 'Winner',
-    RestartGame = 'RestartGame'
+    RestartGame = 'RestartGame',
+    PlayerLeft = 'PlayerLeft'
 }
 
 /* Games */
