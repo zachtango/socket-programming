@@ -44,7 +44,6 @@ function Game() {
 
         socket.onmessage = ({data}) => {
             const {type, payload} = JSON.parse(data);
-            console.log(type, payload)
 
             if (type === MessageType.InitializeGame) {
               const {playerId, playerTurn, playerIdToPlayer, board} = payload;
@@ -82,9 +81,7 @@ function Game() {
       
               setBoard(board);
               setGameState(gameState)
-      
-              console.log(player, winner)
-                
+                      
                 setWinnerStatus(
                     winner === player ? 'You Won' : 
                     winner === Player.Spectator ? 'It\'s a Tie' : 'You Lost'

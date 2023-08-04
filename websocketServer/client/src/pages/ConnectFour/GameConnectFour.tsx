@@ -18,10 +18,9 @@ function GameConnectFour({
 
   function handleClickSquare(socket: WebSocket, x: number, y: number) {
     if (player !== playerTurn) {
-      console.log("Cannot move");
       return;
     }
-    console.log('send move', socket)
+
     sendMove(socket, x, y);
   }
 
