@@ -2,7 +2,9 @@ import React from 'react';
 import CardContainer from '../components/CardContainer';
 import { GameName } from '../utils/enums';
 
-function Home({handleClickCard} : {handleClickCard: (gameName: GameName) => void}) {
+
+function Home() {  
+
   return (
     <div className='Home w-full h-full p-12 flex flex-col items-center'>
       <div className='h-[10%]'>
@@ -13,9 +15,7 @@ function Home({handleClickCard} : {handleClickCard: (gameName: GameName) => void
           play with friends!
         </p>
       </div>
-      <CardContainer
-        handleClickCard={handleClickCard}
-      />
+      <CardContainer />
     </div>
   );
 }

@@ -1,24 +1,21 @@
 import { useEffect, useState } from "react";
 import GameTicTacToe from "./TicTacToe/GameTicTacToe";
-import { GameName, PageState } from "../utils/enums";
+import { GameName, GameState } from "../utils/enums";
 import LobbyModal from "./LobbyModal";
 import EndGameModal from "./EndGameModal";
 import { sendPlayAgain } from "../utils/socket";
 import GameConnectFour from "./ConnectFour/GameConnectFour";
+import { useParams, useSearchParams } from "react-router-dom";
 
 
-function Game({
-    gameName,
-    gameId,
-    pageState,
-    handleGameStateChange
-} : 
-{
-    gameName: GameName,
-    gameId: string,
-    pageState: PageState,
-    handleGameStateChange: (gameState: PageState) => void
-}) {
+function Game() {
+    const { gameId } = useParams();
+    const [searchParams] = useSearchParams();
+    
+    const gameName = searchParams.get('game') as GameName
+
+    const [gameState, setGameState] = useState<GameState>(GameState.Idle)
+
     // Handles socket connection
     const [socket, setSocket] = useState<WebSocket | null>(null)
     const [winnerStatus, setWinnerStatus] = useState<string>('')
@@ -37,24 +34,27 @@ function Game({
         return <div>Loading...</div>
     }
 
-    const lobbyModal = pageState === PageState.Idle ? 
+    if (!gameName || !gameId || !Object.values(GameName).includes(gameName)) {
+        return <div>Error</div>
+    }
+
+    const lobbyModal = gameState === GameState.Idle ? 
         <LobbyModal gameName={gameName} gameId={gameId} /> : null;
-    const endGameModal = (pageState === PageState.Finished && winnerStatus) ? <EndGameModal status={winnerStatus} handlePlayAgain={() => sendPlayAgain(socket)} /> : null;
+    const endGameModal = (gameState === GameState.Finished && winnerStatus) ?
+        <EndGameModal status={winnerStatus} handlePlayAgain={() => sendPlayAgain(socket)} /> : null;
 
     let game;
 
     if (gameName === GameName.TicTacToe) {
         game = <GameTicTacToe
             socket={socket}
-            pageState={pageState}
-            handleGameStateChange={handleGameStateChange}
+            handleGameStateChange={(gameState: GameState) => setGameState(gameState)}
             handleWinner={(winnerStatus: string) => setWinnerStatus(winnerStatus)}
         />
     } else if (gameName === GameName.ConnectFour) {
         game = <GameConnectFour
             socket={socket}
-            pageState={pageState}
-            handleGameStateChange={handleGameStateChange}
+            handleGameStateChange={(gameState: GameState) => setGameState(gameState)}
             handleWinner={(winnerStatus: string) => setWinnerStatus(winnerStatus)}
         />
     }

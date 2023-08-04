@@ -12,6 +12,9 @@ function LobbyModal({
   gameName: GameName,
   gameId: string
 }) {
+
+  const url = `${window.location.protocol}//${window.location.host}/${gameId}?game=${encodeURIComponent(gameName)}`
+
   return (
     <div className='LobbyModal bg-white absolute p-8 m-auto top-0 bottom-0 left-0 right-0 max-w-[300px] min-w-[150px] w-[70%] aspect-square border-2 flex flex-col justify-evenly items-center'>
       <h1 className="text-2xl font-bold mb-4">{gameName}</h1>
@@ -26,11 +29,14 @@ function LobbyModal({
       </div>
 
       <p>Waiting for a friend...</p>
-      <div className='w-fit flex items-center justify-between border-2 px-2 py-1'>
-        <span className='mr-2'>{URL}/{gameId}?game={encodeURIComponent(gameName
-          )}</span>
-        <MdOutlineContentCopy />
-      </div>
+      <button className='w-full flex items-center justify-between border-2 px-2 py-1 active:border-blue-500'
+        onClick={() => {navigator.clipboard.writeText(url)}}
+      >
+        <p className='mr-[3px] w-[90%] whitespace-nowrap overflow-hidden text-ellipsis '>
+          {url}  
+        </p>
+        <MdOutlineContentCopy className='w-[10%]' />
+      </button>
     </div>
   );
 }

@@ -1,11 +1,4 @@
 
-export enum PageState {
-    Idle = 0,
-    Active = 1,
-    Finished = 2,
-    Home = 3,
-}
-
 /* Server and Client Shared Enums */
 
 export enum Player {

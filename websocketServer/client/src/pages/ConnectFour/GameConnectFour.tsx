@@ -1,18 +1,16 @@
 import React, { memo, useEffect, useState } from 'react';
-import CardContainer from '../../components/CardContainer';
-import { ConnectFour, MessageType, PageState, Player, TicTacToe } from '../../utils/enums';
+import { ConnectFour, GameState, MessageType, Player } from '../../utils/enums';
 import Board from './Board';
 import { sendMove } from '../../utils/socket';
 
 
-
 function GameConnectFour({
   socket,
-  pageState,
   handleGameStateChange,
   handleWinner
-} : {socket: WebSocket, pageState : PageState, 
-  handleGameStateChange: (gameState: PageState) => void,
+} : {
+  socket: WebSocket,
+  handleGameStateChange: (gameState: GameState) => void,
   handleWinner: (winnerStatus: string) => void
 }) {
   const [board, setBoard] = useState([
@@ -63,9 +61,7 @@ function GameConnectFour({
         setBoard(board);
         setPlayerTurn(playerTurn);
 
-        if (gameState !== pageState && gameState === PageState.Active) {
-          handleGameStateChange(gameState);
-        }
+        handleGameStateChange(gameState);
       } else if (type === MessageType.Winner) {
         const {gameState, winner, board} = payload;
 
@@ -86,7 +82,7 @@ function GameConnectFour({
   }, [player, playerId])
 
   function handleClickSquare(socket: WebSocket, x: number, y: number) {
-    if (!socket || pageState !== PageState.Active || player !== playerTurn) {
+    if (!socket || player !== playerTurn) {
       console.log("Cannot move");
       return;
     }
@@ -97,10 +93,8 @@ function GameConnectFour({
   function getStatusMessage() {
     let status = ''
 
-    if (pageState === PageState.Active) {
-      const isTurn = player === playerTurn;
-      status = isTurn ? "Your turn" : `Waiting on Player ${player === Player.One ? 'X' : 'O'}`
-    }
+    const isTurn = player === playerTurn;
+    status = isTurn ? "Your turn" : `Waiting on Player ${player === Player.One ? 'X' : 'O'}`
 
     return status;
   }

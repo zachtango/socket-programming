@@ -19,8 +19,8 @@ function Board({
                     className='Square w-[14.29%] h-full border-2 flex justify-center items-center'
                     onClick={() => handleClickSquare(i, j)}
                 >
-                    {square === ConnectFour.Square.Red ? <div className='w-[85%] h-[85%] bg-red-500 rounded-full' /> :
-                        square === ConnectFour.Square.Blue ? <div className='w-[85%] h-[85%] bg-blue-500 rounded-full' /> :
+                    {square === ConnectFour.Square.Red ? <div className='w-[85%] aspect-square bg-red-500 rounded-full' /> :
+                        square === ConnectFour.Square.Blue ? <div className='w-[85%] aspect-square bg-blue-500 rounded-full' /> :
                         null
                     }
                 </div>
