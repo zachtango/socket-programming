@@ -35,7 +35,7 @@ function Game() {
 
   useEffect(() => {
     const socket = new WebSocket(
-      `ws://${window.location.hostname}:9001/game/${gameId}?game=${gameName}`,
+      `wss://${window.location.hostname}:9001/game/${gameId}?game=${gameName}`,
     );
 
     setSocket(socket);
