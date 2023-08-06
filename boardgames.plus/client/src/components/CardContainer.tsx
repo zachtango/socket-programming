@@ -24,7 +24,7 @@ function CardContainer() {
   ];
 
   return (
-    <div className="CardContainer p-6 border-2 max-w-[1000px] w-full h-[90%] flex flex-wrap">
+    <div className="CardContainer p-6 border-2 max-w-[1000px] w-full h-[90%] flex flex-wrap justify-center">
       {games.map((game) => (
         <Link
           key={game["name"]}
